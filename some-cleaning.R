@@ -56,5 +56,15 @@ my_df <-
 my_df %>% count(risky_loan)
 my_df <- rbind(my_df %>% filter(risky_loan == 1),
                my_df %>% filter(risky_loan == 0) %>% 
-                 slice_sample(n=200000))
-my_df %>% saveRDS(here::here("data","loan.RDS"))
+                 slice_sample(n=50000)) %>% 
+  tibble() %>% 
+  mutate(risky_loan = as.factor(risky_loan))
+my_df %>% glimpse()
+my_df %>% select(loan_amnt,term:verification_status,
+                 purpose:initial_list_status,
+                 total_rec_int,recoveries,issue_d,
+                 last_pymnt_amnt,last_credit_pull_d,
+                 risky_loan,total_pymnt_inv,policy_code,out_prncp,
+                 ) %>% 
+  saveRDS(here::here("data","loan.RDS"))
+

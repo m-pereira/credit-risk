@@ -8,7 +8,7 @@ my_df_split <- initial_split(my_df, prop = 0.5, strata = risky_loan)
 ## in case you want use bootstrap bootstrap
 k_fold <- vfold_cv(training(my_df_split), v = 5)
 ## recipe-------------------
-tree_recipe <-
+rf_recipe <-
   recipe(formula = risky_loan ~ ., data = training(my_df_split)) %>%
   step_impute_median(all_numeric_predictors()) %>% 
   step_zv(all_numeric_predictors()) %>% 
@@ -20,53 +20,58 @@ tree_recipe <-
   step_dummy(all_nominal_predictors(),one_hot = FALSE) 
 
 ##spec-------------------
-tree_spec <-
-decision_tree(cost_complexity = tune(),
-            tree_depth = tune(),
-            min_n = tune()) %>%
+rf_spec <-
+  rand_forest(mtry = tune(),
+              trees = tune(),
+              min_n = tune()) %>%
   set_mode("classification") %>%
-  set_engine("rpart")
+  set_engine("ranger")
+rf_spec %>% extract_parameter_set_dials()
+rf_spec %>% 
+dials::update.parameters(
+  
+)
 ##workflow----------------------
-tree_workflow <-
+rf_workflow <-
   workflow() %>%
-  add_recipe(tree_recipe) %>%
-  add_model(tree_spec)
-tree_workflow
+  add_recipe(rf_recipe) %>%
+  add_model(rf_spec)
+rf_workflow
 ## tune grid------------------
 set.seed(7785)
 doParallel::registerDoParallel()
 
-tree_grid <- grid_regular(
-  cost_complexity(), 
-  tree_depth(), 
-  min_n(), 
-  levels = 4)
-tree_grid
+rf_grid <- grid_regular(
+  mtry(c(5,20)),
+  trees(c(100,400)),
+  min_n(c(8,16)),
+  levels = 2)
+rf_grid
 
-tree_tune <-
-  tune_grid(tree_workflow,
+rf_tune <-
+  tune_grid(rf_workflow,
             k_fold,
-            grid = tree_grid,
+            grid = rf_grid,
             metrics = metric_set(accuracy, 
-                      roc_auc, sensitivity, specificity)
+                                 roc_auc, sensitivity, specificity)
   )
-tree_tune
+rf_tune
 ### show best ------------------------
-show_best(tree_tune,metric = "roc_auc")
+show_best(rf_tune,metric = "roc_auc")
 
-autoplot(tree_tune)
+autoplot(rf_tune)
 ## finalize workflow---------------
-final_tree <- tree_workflow %>%
-  finalize_workflow(select_best(tree_tune,metric = "roc_auc"))
-final_tree
+final_rf <- rf_workflow %>%
+  finalize_workflow(select_best(rf_tune,metric = "roc_auc"))
+final_rf
 
 ## last fit----------------------
-my_df_fit <- last_fit(final_tree, my_df_split)
-my_df_fit_v <- fit(final_tree, testing(my_df_split))
+my_df_fit <- last_fit(final_rf, my_df_split)
+my_df_fit_v <- fit(final_rf, testing(my_df_split))
 
 
 my_df_fit
-saveRDS(my_df_fit,here::here("artifacts","wkflw.RDS"))
+saveRDS(my_df_fit,here::here("artifacts","wkflw-rf.RDS"))
 
 collect_metrics(my_df_fit)
 predict(
@@ -88,7 +93,7 @@ library(DALEXtra)
 final_fitted <- my_df_fit$.workflow[[1]]
 predict(final_fitted, my_df[10:12, ])
 
-tree_explainer <- explain_tidymodels(
+rf_explainer <- explain_tidymodels(
   final_fitted,
   data = dplyr::select(testing(my_df_split),
                        -risky_loan),
@@ -98,7 +103,7 @@ tree_explainer <- explain_tidymodels(
 )
 
 pdp_time <- model_profile(
-  tree_explainer,
+  rf_explainer,
   variables = "time",
   N = NULL,
   groups = "type"
@@ -114,7 +119,7 @@ as_tibble(pdp_time$agr_profiles) %>%
     y = "Predicted probability of shortcut",
     color = NULL,
     title = "Partial dependence plot for Mario Kart world records",
-    subtitle = "Predictions from a decision tree model"
+    subtitle = "Predictions from a decision rf model"
   )
 
 
@@ -123,11 +128,11 @@ as_tibble(pdp_time$agr_profiles) %>%
 library(vetiver)
 v <- my_df_fit %>%
   extract_workflow() %>%
-  vetiver_model(model_name = "credit-risk")
+  vetiver_model(model_name = "credit-risk-rf")
 v
 library(pins)
 board <- board_temp(versioned = TRUE)
 board %>% vetiver_pin_write(v)
-vetiver_write_plumber(board, "credit-risk", rsconnect = FALSE)
+vetiver_write_plumber(board, "credit-risk-rf", rsconnect = FALSE)
 vetiver_write_docker(v)
 
