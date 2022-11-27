@@ -5,7 +5,8 @@
 .csv
 .csv
 *.csv
-.RDS
-*.RDS
+loan.RDS
 .json
 *.json
+.xlsx
+*.xlsx
