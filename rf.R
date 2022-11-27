@@ -25,28 +25,25 @@ rf_spec <-
               trees = tune(),
               min_n = tune()) %>%
   set_mode("classification") %>%
-  set_engine("ranger")
+  set_engine("ranger", importance = "permutation")
 rf_spec %>% extract_parameter_set_dials()
-rf_spec %>% 
-dials::update.parameters(
-  
-)
+
 ##workflow----------------------
 rf_workflow <-
   workflow() %>%
   add_recipe(rf_recipe) %>%
   add_model(rf_spec)
 rf_workflow
+
 ## tune grid------------------
+rf_grid <- grid_latin_hypercube(
+  mtry(c(14,28)),
+  trees(c(200,600)),
+  min_n(c(12,24)),
+  size = 6)
+rf_grid
 set.seed(7785)
 doParallel::registerDoParallel()
-
-rf_grid <- grid_regular(
-  mtry(c(5,20)),
-  trees(c(100,400)),
-  min_n(c(8,16)),
-  levels = 2)
-rf_grid
 
 rf_tune <-
   tune_grid(rf_workflow,
@@ -85,12 +82,24 @@ predict(
 ## understand the model--------------------
 
 library(vip)
-vip(my_df_fit_v)
-
-my_df_fit$.workflow[[1]]
+my_df_fit %>% 
+  extract_fit_parsnip() %>% 
+  vip()
+# imp_spec <- rf_spec %>%
+#   finalize_model(select_best(rf_tune)) %>%
+#   set_engine("ranger", importance = "permutation")
+# 
+# vip_obj <- 
+# workflow() %>%
+#   add_recipe(rf_recipe) %>%
+#   add_model(imp_spec) %>%
+#   fit(training(my_df_split)) %>%
+#   extract_fit_parsnip() 
+# vip_obj %>% 
+#   vip(aesthetics = list(alpha = 0.8, fill = "midnightblue"))
 
 library(DALEXtra)
-final_fitted <- my_df_fit$.workflow[[1]]
+final_fitted <- my_df_fit %>% extract_workflow() 
 predict(final_fitted, my_df[10:12, ])
 
 rf_explainer <- explain_tidymodels(
@@ -101,12 +110,12 @@ rf_explainer <- explain_tidymodels(
                     risky_loan),
   verbose = FALSE
 )
-
+rf_explainer
 pdp_time <- model_profile(
   rf_explainer,
-  variables = "time",
+  variables = "loan_amnt",
   N = NULL,
-  groups = "type"
+  groups = "term"
 )
 
 
@@ -122,17 +131,17 @@ as_tibble(pdp_time$agr_profiles) %>%
     subtitle = "Predictions from a decision rf model"
   )
 
-
-
-## save the model------------------
-library(vetiver)
-v <- my_df_fit %>%
-  extract_workflow() %>%
-  vetiver_model(model_name = "credit-risk-rf")
-v
-library(pins)
-board <- board_temp(versioned = TRUE)
-board %>% vetiver_pin_write(v)
-vetiver_write_plumber(board, "credit-risk-rf", rsconnect = FALSE)
-vetiver_write_docker(v)
-
+# 
+# 
+# ## save the model------------------
+# library(vetiver)
+# v <- my_df_fit %>%
+#   extract_workflow() %>%
+#   vetiver_model(model_name = "credit-risk-rf")
+# v
+# library(pins)
+# board <- board_temp(versioned = TRUE)
+# board %>% vetiver_pin_write(v)
+# vetiver_write_plumber(board, "credit-risk-rf", rsconnect = FALSE)
+# vetiver_write_docker(v)
+# 

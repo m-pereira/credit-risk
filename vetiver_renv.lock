@@ -542,6 +542,19 @@
       "Hash": "18e9c28c1d3ca1560ce30658b22ce104",
       "Requirements": []
     },
+    "modelenv": {
+      "Package": "modelenv",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ecf47535c467857cf4b781647b18edf0",
+      "Requirements": [
+        "glue",
+        "rlang",
+        "tibble",
+        "vctrs"
+      ]
+    },
     "munsell": {
       "Package": "munsell",
       "Version": "0.5.0",
@@ -598,10 +611,10 @@
     },
     "parsnip": {
       "Package": "parsnip",
-      "Version": "1.0.2",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "12404b9cdbc478d7a66d0fb85f8761e4",
+      "Hash": "9cf8cb344a158566a0c785db7b72a316",
       "Requirements": [
         "cli",
         "dplyr",
@@ -1005,10 +1018,10 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.5.0",
+      "Version": "0.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "001fd6a5ebfff8316baf9fb2b5516dc9",
+      "Hash": "970324f6572b4fd81db507b5d4062cb0",
       "Requirements": [
         "cli",
         "glue",
@@ -1104,16 +1117,17 @@
     },
     "workflows": {
       "Package": "workflows",
-      "Version": "1.1.0",
+      "Version": "1.1.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6aa8c725126b1a68609684dc9b4bfd8e",
+      "Hash": "e8dbcbfad62d4018386c2dbc1ad5185f",
       "Requirements": [
         "cli",
         "generics",
         "glue",
         "hardhat",
         "lifecycle",
+        "modelenv",
         "parsnip",
         "rlang",
         "tidyselect",

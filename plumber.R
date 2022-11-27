@@ -4,8 +4,8 @@ library(pins)
 library(plumber)
 library(rapidoc)
 library(vetiver)
-b <- board_folder(path = "/tmp/Rtmpm27D5I/pins-1232cde5377")
-v <- vetiver_pin_read(b, "credit-risk", version = "20221126T214524Z-ac84d")
+b <- board_folder(path = "/tmp/Rtmp3e9m6p/pins-434f433f178")
+v <- vetiver_pin_read(b, "credit-risk", version = "20221126T234915Z-1c5d4")
 
 #* @plumber
 function(pr) {

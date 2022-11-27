@@ -34,15 +34,15 @@ tree_workflow <-
 tree_workflow
 ## tune grid------------------
 set.seed(7785)
-doParallel::registerDoParallel()
 
-tree_grid <- grid_regular(
-  cost_complexity(), 
-  tree_depth(), 
-  min_n(), 
-  levels = 4)
+tree_grid <- grid_latin_hypercube(
+  cost_complexity(c(-10, -1)), 
+  tree_depth(c(1,15)), 
+  min_n(c(2,40)), 
+  size = 10)
 tree_grid
-
+set.seed(7785)
+doParallel::registerDoParallel()
 tree_tune <-
   tune_grid(tree_workflow,
             k_fold,
@@ -80,9 +80,9 @@ predict(
 ## understand the model--------------------
 
 library(vip)
-vip(my_df_fit_v)
-
-my_df_fit$.workflow[[1]]
+my_df_fit %>% 
+  extract_fit_parsnip() %>% 
+  vip(aesthetics = list(alpha = 0.8, fill = "midnightblue"))
 
 library(DALEXtra)
 final_fitted <- my_df_fit$.workflow[[1]]
@@ -97,27 +97,9 @@ tree_explainer <- explain_tidymodels(
   verbose = FALSE
 )
 
-pdp_time <- model_profile(
-  tree_explainer,
-  variables = "time",
-  N = NULL,
-  groups = "type"
-)
-
-
-as_tibble(pdp_time$agr_profiles) %>%
-  mutate(`_label_` = str_remove(`_label_`, "workflow_")) %>%
-  ggplot(aes(`_x_`, `_yhat_`, color = `_label_`)) +
-  geom_line(size = 1.2, alpha = 0.8) +
-  labs(
-    x = "Time to complete track",
-    y = "Predicted probability of shortcut",
-    color = NULL,
-    title = "Partial dependence plot for Mario Kart world records",
-    subtitle = "Predictions from a decision tree model"
-  )
-
-
+library(modelStudio)
+new_observation <- testing(my_df_split) %>% slice_head()
+modelStudio(tree_explainer, new_observation)
 
 ## save the model------------------
 library(vetiver)
@@ -128,6 +110,7 @@ v
 library(pins)
 board <- board_temp(versioned = TRUE)
 board %>% vetiver_pin_write(v)
-vetiver_write_plumber(board, "credit-risk", rsconnect = FALSE)
+vetiver_write_plumber(board, "credit-risk", 
+                      rsconnect = FALSE)
 vetiver_write_docker(v)
 
