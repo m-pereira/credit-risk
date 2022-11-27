@@ -68,7 +68,6 @@ my_df_fit <- last_fit(final_tree, my_df_split)
 
 
 my_df_fit
-saveRDS(my_df_fit,here::here("artifacts","wkflw.RDS"))
 
 collect_metrics(my_df_fit)
 predict(
@@ -106,6 +105,9 @@ new_observation <- testing(my_df_split) %>% slice_head()
 modelStudio(tree_explainer, new_observation)
 
 ## save the model------------------
+my_df_fit %>%
+  extract_workflow() %>% 
+  saveRDS("light-model.RDS")
 library(vetiver)
 v <- my_df_fit %>%
   extract_workflow() %>%
