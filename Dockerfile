@@ -17,4 +17,4 @@ RUN Rscript -e "install.packages('renv')"
 RUN Rscript -e "renv::restore()"
 COPY plumber.R /opt/ml/plumber.R
 EXPOSE 8000
-ENTRYPOINT ["R", "-e", "pr <- plumber::plumb('/opt/ml/plumber.R'); pr$run(host = '0.0.0.0', port = 8000)"]
+ENTRYPOINT ["R", "-e", "pr <- plumber::plumb('/opt/ml/plumber.R'); pr$run(host = '0.0.0.0', port = s.numeric(Sys.getenv('PORT')), swagger = F)"]

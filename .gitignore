@@ -7,3 +7,5 @@
 *.csv
 .RDS
 *.RDS
+.json
+*.json
