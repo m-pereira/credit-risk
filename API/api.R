@@ -16,18 +16,18 @@ model <- readRDS("light-model.RDS")
 #* @apiTitle API to forecast credit risk
 #* @apiDescription Fore more information check out in :
 #* Echo back the input
-#* @param otpnp Numeric: 0
-#* @param lpa Numeric: 119.66
-#* @param lcpd Date: "Sep-2013"
-#* @param tpi Numeric 1008.91
+#* @param out_prncp Numeric: 0
+#* @param last_pymnt_amnt Numeric: 119.66
+#* @param last_credit_pull_d Date: "Sep-2013"
+#* @param total_pymnt_inv Numeric 1008.91
 #* @post /predict
-function(otpnp,lpa,
-         lcpd,tpi){
+function(out_prncp,last_pymnt_amnt,
+         last_credit_pull_d,total_pymnt_inv){
   df <- 
-    tibble(out_prncp = as.numeric(otpnp),
-           last_pymnt_amnt = as.numeric(lpa),
-           last_credit_pull_d = as.character(lcpd),
-           total_pymnt_inv = as.numeric(tpi)
+    tibble(out_prncp = as.numeric(out_prncp),
+           last_pymnt_amnt = as.numeric(last_pymnt_amnt),
+           last_credit_pull_d = as.character(last_credit_pull_d),
+           total_pymnt_inv = as.numeric(total_pymnt_inv)
     )
   predict(model,df) %>% slice(1) %>% pluck(1)
 }
