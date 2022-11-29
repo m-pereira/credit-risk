@@ -24,10 +24,10 @@ model <- readRDS("light-model.RDS")
 function(otpnp,lpa,
          lcpd,tpi){
   df <- 
-    tibble(otpnp = as.numeric(otpnp),
-           lpa = as.numeric(lpa),
-           lcpd = as.character(lcpd),
-           tpi = as.numeric(tpi)
+    tibble(out_prncp = as.numeric(otpnp),
+           last_pymnt_amnt = as.numeric(lpa),
+           last_credit_pull_d = as.character(lcpd),
+           total_pymnt_inv = as.numeric(tpi)
     )
   predict(model,df) %>% slice(1) %>% pluck(1)
 }
