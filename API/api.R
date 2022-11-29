@@ -31,3 +31,13 @@ function(out_prncp,last_pymnt_amnt,
     )
   predict(model,df) %>% slice(1) %>% pluck(1)
 }
+
+
+
+#* @apiTitle Check the API
+#* @apiDescription This is a sanity check
+#* Echo back the input
+#* @post /check
+function(){
+print(paste0("Now is: ",Sys.time()))
+}
