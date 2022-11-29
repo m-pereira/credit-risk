@@ -19,7 +19,7 @@ model <- readRDS("light-model.RDS")
 #* @param last_pymnt_amnt Numeric: 119.66
 #* @param last_credit_pull_d Date: "Sep-2013"
 #* @param total_pymnt_inv Numeric 1008.91
-#* @get /predict
+#* @post /predict
 function(out_prncp,last_pymnt_amnt,
                  last_credit_pull_d,total_pymnt_inv){
   df <- 

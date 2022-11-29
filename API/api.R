@@ -20,7 +20,7 @@ model <- readRDS("light-model.RDS")
 #* @param lpa Numeric: 119.66
 #* @param lcpd Date: "Sep-2013"
 #* @param tpi Numeric 1008.91
-#* @get /predict
+#* @post /predict
 function(otpnp,lpa,
          lcpd,tpi){
   df <- 
