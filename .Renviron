@@ -1,0 +1,6 @@
+GCE_DEFAULT_PROJECT_ID=deployr-369914
+GAR_CLIENT_JSON=/home/user/Documents/auh01local.json
+GCE_AUTH_FILE=/home/user/Documents/service-account.json
+CR_REGION=southamerica-east1
+CR_BUILD_EMAIL=editor@deployr-369914.iam.gserviceaccount.com
+GCS_DEFAULT_BUCKET=b0001gcp
