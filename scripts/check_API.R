@@ -1,7 +1,6 @@
 ## check API
 library(httr)
 library(jsonlite)
-
 url <- "https://deployapicredit-6o2dvvrxhq-rj.a.run.app/check"
 response <-  POST(url)
 response
