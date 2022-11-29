@@ -78,6 +78,12 @@ predict(
 
 
 ## understand the model--------------------
+my_flw <- my_df_fit %>% extract_workflow() 
+final_fitted <- my_df_fit$.workflow[[1]]
+predict(final_fitted, my_df[10:12, ])
+
+library(rpart.plot)
+rpart.plot(my_flw$fit)
 
 library(vip)
 my_df_fit %>% 
@@ -100,7 +106,7 @@ tree_explainer <- explain_tidymodels(
 library(modelStudio)
 new_observation <- testing(my_df_split) %>% slice_head()
 modelStudio(tree_explainer, new_observation)
-
+library(modelDown)
 ## save the model------------------
 library(vetiver)
 v <- my_df_fit %>%
