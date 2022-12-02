@@ -10,3 +10,4 @@ loan.RDS
 *.json
 .xlsx
 *.xlsx
+googlecloudrunner-auth-key.json

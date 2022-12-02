@@ -39,8 +39,8 @@ function(out_prncp,last_pymnt_amnt,
 #* Echo back the input
 #* @post /check
 function(){
-#print(paste0("Now is: ",Sys.time()))
-print(paste0("the file light-model.RDS ",file.exists(here::here("light-model.RDS"))))
+print(paste0("Now is: ",Sys.time()))
+#print(paste0("the file light-model.RDS ",file.exists(here::here("light-model.RDS"))))
 #print(paste0("the file light-model.RDS ",file.exists(here::here("API","light-model.RDS"))))
 #print(paste0("the files that exists are:",list.files()))
 }
